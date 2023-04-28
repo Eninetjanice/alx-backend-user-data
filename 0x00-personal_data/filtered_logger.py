@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """ PII Module """
 
+import csv
 import logging
 import re
 from typing import List
+
+PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 
 def filter_datum(fields: List[str], redaction: str, message: str,
@@ -32,3 +35,22 @@ class RedactingFormatter(logging.Formatter):
         """
         return filter_datum(self.fields, self.REDACTION,
                             super().format(record), self.SEPARATOR)
+
+
+def get_logger() -> logging.Logger:
+    """
+    Function that takes no arguments and returns a logging.Logger object.
+    """
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+
+    # Prevent propagation of log messages to other loggers
+    logger.propagate = False
+
+    # Create & add stream handler to logger
+    handler = logging.StreamHandler()
+    formatter = RedactingFormatter(fields=PII_FIELDS)
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
+    return logger
