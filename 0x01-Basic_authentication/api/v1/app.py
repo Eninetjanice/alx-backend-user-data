@@ -6,7 +6,7 @@ from os import getenv
 from api.v1.auth.auth import Auth
 from api.v1.auth.basic_auth import BasicAuth
 from api.v1.views import app_views
-from flask import Flask, jsonify, abort, request, make_response
+from flask import Flask, jsonify, abort, request
 from flask_cors import (CORS, cross_origin)
 import os
 
@@ -17,7 +17,7 @@ auth = None
 auth_type = getenv("AUTH_TYPE")
 basic_auth = getenv('AUTH_TYPE')
 
-if AUTH_TYPE == "basic_auth":
+if auth_type == "basic_auth":
     auth = BasicAuth()
 else:
     auth = Auth()
@@ -52,13 +52,16 @@ def before_request() -> str:
     """
     if auth is None:
         return
-        if not auth.require_auth(path, excluded_paths):
-            return
-        if auth.authorization_header(request) is None:
-            return None
-            abort(401)
-        if auth.current_user(request) is None:
-            return abort(403)
+    #  if not auth.require_auth(path, excluded_paths):
+        #  return
+    if request.path in excluded_paths:
+        return
+    if not auth.require_auth(request.path, excluded_paths):
+        abort(401)
+    if auth.authorization_header(request) is None:
+        abort(401)
+    if auth.current_user(request) is None:
+        abort(403)
 
 
 if __name__ == "__main__":

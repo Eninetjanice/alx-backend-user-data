@@ -41,7 +41,9 @@ class Auth():
             request doesn’t contain the header key Authorization
             Otherwise, return the value of the header request Authorization
         """
-        if request is None or 'Authorization' not in request.headers:
+        if request is None:
+            return None
+        if request.headers.get("Authorization") is None:
             return None
         return request.headers.get('Authorization')
 
