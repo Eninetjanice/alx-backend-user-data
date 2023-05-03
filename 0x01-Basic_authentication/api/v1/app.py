@@ -19,8 +19,8 @@ basic_auth = getenv('AUTH_TYPE')
 
 if auth_type == "basic_auth":
     auth = BasicAuth()
-else:
-    auth = Auth()
+#  else:
+    #  auth = Auth()
 
 excluded_paths = ['/api/v1/status/', '/api/v1/unauthorized/',
                   '/api/v1/forbidden/']
