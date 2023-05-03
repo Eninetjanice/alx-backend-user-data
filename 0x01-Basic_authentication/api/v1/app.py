@@ -25,6 +25,13 @@ def unauthorized_error(error) -> str:
     """ Error handler for 401 Unauthorized status code. """
     return jsonify({"error": "Unauthorized"}), 401
 
+
+@app.errorhandler(403)
+def forbidden_error(error) -> str:
+    """ Error handler for 403 Forbidden status code. """
+    return jsonify({"error": "Forbidden"}), 403
+
+
 if __name__ == "__main__":
     host = getenv("API_HOST", "0.0.0.0")
     port = getenv("API_PORT", "5000")
