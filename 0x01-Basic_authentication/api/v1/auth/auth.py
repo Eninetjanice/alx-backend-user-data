@@ -15,7 +15,7 @@ class Auth():
         """
         Check if authentication is required
         Return:
-            True - if the path is not in the list of strings excluded_paths
+            False (path and excluded_paths)
         """
         if path is None:
             return True
