@@ -87,7 +87,7 @@ class BasicAuth(Auth):
             return None
         # Return None if db lacks User instance with email == user_email
         users = User.search({"email": user_email})
-        if len(users) == 0:
+        if not users:
             return None
         # Return None if user_pwd =! pwd of the User instance found
         user = users[0]
@@ -95,3 +95,13 @@ class BasicAuth(Auth):
             return None
         # Otherwise, return the User instance
         return user
+
+    def current_user(self, request=None) -> TypeVar('User'):
+        """
+        Overloads Auth and retrieves User instance for a request
+        """
+        header = self.authorization_header(request)
+        b64header = self.extract_base64_authorization_header(header)
+        decoded = self.decode_base64_authorization_header(b64header)
+        user_creds = self.extract_user_credentials(decoded)
+        return self.user_object_from_credentials(*user_creds)
