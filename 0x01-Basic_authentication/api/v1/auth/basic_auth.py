@@ -7,8 +7,9 @@ from api.v1.auth.auth import Auth
 class BasicAuth(Auth):
     """class BasicAuth
     """
-    
-    def extract_base64_authorization_header(self, authorization_header: str) -> str:
+
+    def extract_base64_authorization_header(self,
+                                            authorization_header: str) -> str:
         """
         Basic Authentication - Base64 part
         Return:
@@ -20,7 +21,7 @@ class BasicAuth(Auth):
         # Return None if authorization_header is not a string
         if not isinstance(authorization_header, str):
             return None
-        # Return None if authorization_header doesn’t start by Basic (with a space at the end)
+        # Return None if authorization_header doesn’t start by 'Basic '
         if not authorization_header.startswith('Basic '):
             return None
         # Otherwise, return the value after Basic (after the space)
