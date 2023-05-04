@@ -2,6 +2,8 @@
 """BasicAuth that inherits from Auth
 """
 from api.v1.auth.auth import Auth
+from typing import Union
+import base64
 
 
 class BasicAuth(Auth):
@@ -26,3 +28,45 @@ class BasicAuth(Auth):
             return None
         # Otherwise, return the value after Basic (after the space)
         return authorization_header.split(' ')[1]
+
+    def decode_base64_authorization_header(self, base64_authorization_header:
+                                           str) -> str:
+        """
+        Basic Authentication - Base64 decode
+        Return:
+            Decode value of Base64 str base64_authorization_header
+        """
+        # Return None if base64_authorization_header is None
+        if base64_authorization_header is None:
+            return None
+        # Return None if base64_authorization_header is not a string
+        if not isinstance(base64_authorization_header, str):
+            return None
+        # Return None if base64_authorization_header is not a valid Base64
+        # Otherwise, return decoded value as UTF8 string - use decode('utf-8')
+        try:
+            decoded_bytes = base64.b64decode(base64_authorization_header)
+            return decoded_bytes.decode('utf-8')
+        except Exception:
+            return None
+
+    def extract_user_credentials(self, decoded_base64_authorization_header:
+                                 str) -> (str, str):
+        """
+        Basic Authentication - User credentials extration
+        Returns:
+            2 values:
+            user email and password from the Base64 decoded value
+        """
+        # Return None, None if decoded_base64_authorization_header is None
+        if decoded_base64_authorization_header is None:
+            return None, None
+        # Return None, None if decoded_base64_authorization_header is not str
+        if not isinstance(decoded_base64_authorization_header, str):
+            return None, None
+        # Return None, None if decoded_base64_authorization_header lacks :
+        if ':' not in decoded_base64_authorization_header:
+            return None, None
+        # Else, return user email & user password - the 2 values separated by :
+        user_credentials = decoded_base64_authorization_header.split(':', 1)
+        return user_credentials[0], user_credentials[1]
