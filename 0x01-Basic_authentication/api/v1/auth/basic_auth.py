@@ -2,7 +2,8 @@
 """BasicAuth that inherits from Auth
 """
 from api.v1.auth.auth import Auth
-from typing import Union
+from models.user import User
+from typing import TypeVar
 import base64
 
 
@@ -53,7 +54,7 @@ class BasicAuth(Auth):
     def extract_user_credentials(self, decoded_base64_authorization_header:
                                  str) -> (str, str):
         """
-        Basic Authentication - User credentials extration
+        Basic Authentication - User credentials extraction
         Returns:
             2 values:
             user email and password from the Base64 decoded value
@@ -70,3 +71,27 @@ class BasicAuth(Auth):
         # Else, return user email & user password - the 2 values separated by :
         user_credentials = decoded_base64_authorization_header.split(':', 1)
         return user_credentials[0], user_credentials[1]
+
+    def user_object_from_credentials(self, user_email: str, user_pwd:
+                                     str) -> TypeVar('User'):
+        """
+        Basic Authentication - User credentials extraction
+        Returns:
+            User instance based on his email and password.
+        """
+        # Return None if user_email is None or not a string
+        if user_email is None or not isinstance(user_email, str):
+            return None
+        # Return None if user_pwd is None or not a string
+        if user_pwd is None or not isinstance(user_pwd, str):
+            return None
+        # Return None if db lacks User instance with email == user_email
+        users = User.search({"email": user_email})
+        if len(users) == 0:
+            return None
+        # Return None if user_pwd =! pwd of the User instance found
+        user = users[0]
+        if not user.is_valid_password(user_pwd):
+            return None
+        # Otherwise, return the User instance
+        return user
