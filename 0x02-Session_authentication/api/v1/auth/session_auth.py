@@ -28,6 +28,21 @@ class SessionAuth(Auth):
         self.user_id_by_session_id[session_id] = user_id
         return session_id
 
+    def user_id_for_session_id(self, session_id: str = None) -> str:
+        """
+        User ID for Session ID
+        Return:
+            User ID based on a Session ID
+        """
+        # Return None if session_id is None
+        if session_id is None:
+            return None
+        # Return None if session_id is not a string
+        if not isinstance(session_id, str):
+            return None
+        # Return value (User ID) for the key session_id in the dict
+        return self.user_id_by_session_id.get(session_id)
+
 
 if os.getenv('AUTH_TYPE') == 'session':
     auth = SessionAuth()
