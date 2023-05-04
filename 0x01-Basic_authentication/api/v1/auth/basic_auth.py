@@ -86,8 +86,9 @@ class BasicAuth(Auth):
         if user_pwd is None or not isinstance(user_pwd, str):
             return None
         # Return None if db lacks User instance with email == user_email
-        users = User.search({"email": user_email})
-        if not users:
+        try:
+            users = User.search({"email": user_email})
+        except Exception:
             return None
         # Return None if user_pwd =! pwd of the User instance found
         for user in users:
