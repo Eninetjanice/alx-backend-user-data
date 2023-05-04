@@ -90,11 +90,11 @@ class BasicAuth(Auth):
         if not users:
             return None
         # Return None if user_pwd =! pwd of the User instance found
-        user = users[0]
-        if not user.is_valid_password(user_pwd):
-            return None
-        # Otherwise, return the User instance
-        return user
+        for user in users:
+            if not user.is_valid_password(user_pwd):
+                return None
+            # Else return the User instance
+            return user
 
     def current_user(self, request=None) -> TypeVar('User'):
         """
