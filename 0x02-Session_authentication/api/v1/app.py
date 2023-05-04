@@ -8,7 +8,6 @@ from api.v1.auth.basic_auth import BasicAuth
 from api.v1.views import app_views
 from flask import Flask, jsonify, abort, request
 from flask_cors import (CORS, cross_origin)
-import os
 
 app = Flask(__name__)
 app.register_blueprint(app_views)
@@ -19,6 +18,9 @@ auth_type = getenv("AUTH_TYPE")
 
 if auth_type == "basic_auth":
     auth = BasicAuth()
+elif auth_type == "session_auth":
+    from api.v1.auth.session_auth import SessionAuth
+    auth = SessionAuth()
 else:
     auth = Auth()
 
@@ -60,7 +62,7 @@ def before_request() -> str:
         abort(401)
     elif auth.current_user(request) is None:
         abort(403)
-    # update & assign result of auth.current_user(request) to request.current_user
+    # update & assign result of auth.current_user(request)
     request.current_user = auth.current_user(request)
 
 
