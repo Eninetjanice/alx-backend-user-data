@@ -41,12 +41,12 @@ class Auth():
             request doesn’t contain the header key Authorization
             Otherwise, return the value of the header request Authorization
         """
-        """if request is None:
+        if request is None:
             return None
-        if request.headers.get("Authorization") is None:
+        auth_header = request.headers.get("Authorization")
+        if not auth_header:
             return None
-        return request.headers.get('Authorization')"""
-        return None
+        return auth_header
 
     def current_user(self, request=None) -> TypeVar('User'):
         """
