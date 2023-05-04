@@ -28,6 +28,11 @@ class Auth():
             # Add trailing slash to excluded_path if not present
             if not excluded_path.endswith('/'):
                 excluded_path += '/'
+            # Improve excluded_path
+            if '*' in excluded_path:
+                prefix = excluded_path.split('*')[0]
+                if path.startswith(prefix):
+                    return False
             if path == excluded_path:
                 return False
         return True
