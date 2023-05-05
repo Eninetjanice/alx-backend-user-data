@@ -45,7 +45,7 @@ class SessionAuth(Auth):
         # Return value (User ID) for the key session_id in the dict
         return self.user_id_by_session_id.get(session_id)
 
-    def current_user(self, request=None): 
+    def current_user(self, request=None):
         """
         (overload)
         Return:
