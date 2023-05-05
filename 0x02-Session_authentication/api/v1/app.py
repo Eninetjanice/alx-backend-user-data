@@ -25,7 +25,7 @@ else:
     auth = Auth()
 
 excluded_paths = ['/api/v1/status/', '/api/v1/unauthorized/',
-                  '/api/v1/forbidden/']
+                  '/api/v1/forbidden/', '/api/v1/auth_session/login/']
 
 
 @app.errorhandler(404)
@@ -62,6 +62,8 @@ def before_request() -> str:
         abort(401)
     elif auth.current_user(request) is None:
         abort(403)
+    elif auth.authorization_header(request) and auth.session_cookie(request):
+        return None, abort(401)
     # update & assign result of auth.current_user(request)
     request.current_user = auth.current_user(request)
 
