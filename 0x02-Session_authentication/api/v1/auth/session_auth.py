@@ -7,6 +7,8 @@ from typing import Dict
 import os
 import uuid
 
+from models.user import User
+
 
 class SessionAuth(Auth):
     """
@@ -42,6 +44,17 @@ class SessionAuth(Auth):
             return None
         # Return value (User ID) for the key session_id in the dict
         return self.user_id_by_session_id.get(session_id)
+
+    def current_user(self, request=None): 
+        """
+        (overload)
+        Return:
+            User instance based on a cookie value
+        """
+        _my_session_id = self.session_cookie(request)
+        session_user_id = self.user_id_for_session_id(_my_session_id)
+        user_id = User.get(session_user_id)
+        return user_id
 
 
 if os.getenv('AUTH_TYPE') == 'session':
