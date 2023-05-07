@@ -56,16 +56,17 @@ def before_request() -> str:
         pass
     #  if not auth.require_auth(path, excluded_paths):
         #  return
-    if not auth.require_auth(request.path, excluded_paths):
-        pass
-    elif auth.authorization_header(request) is None:
-        abort(401)
-    elif auth.current_user(request) is None:
-        abort(403)
-    elif auth.authorization_header(request) and auth.session_cookie(request):
-        return None, abort(401)
-    # update & assign result of auth.current_user(request)
-    request.current_user = auth.current_user(request)
+    if auth.require_auth(request.path, excluded_paths):
+        # if auth.authorization_header(request) is None:
+        # abort(401)
+        if auth.authorization_header(
+              request) is None and auth.session_cookie(request) is None:
+            abort(401)
+        request.current_user = auth.current_user(request)
+        if auth.current_user(request) is None:
+            abort(403)
+        if request.current_user is None:
+            abort(403)
 
 
 if __name__ == "__main__":
