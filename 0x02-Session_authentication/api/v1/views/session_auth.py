@@ -3,8 +3,8 @@
 Session authentication route handlers
 """
 from api.v1.views import app_views
-from models.user import User
 from flask import jsonify, request
+from models.user import User
 from os import abort, getenv
 
 
@@ -38,3 +38,17 @@ def session_login() -> str:
 
     user_dict.set_cookie(cookie_response, session_id)
     return user_dict
+
+
+@app_views.route('/auth_session/logout', methods=['DELETE'],
+                 strict_slashes=False)
+def auth_session_logout():
+    """
+    User logout. DELETE /api/v1/auth/session/logout
+    Return:
+        Deleted json (if correctly done) else 404
+    """
+    from api.v1.app import auth
+    if not auth.destroy_session(request):
+        abort(404)
+    return jsonify({}), 200
