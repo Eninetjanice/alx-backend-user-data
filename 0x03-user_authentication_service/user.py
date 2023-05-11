@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
-""" This script uses SQLAlchemy mapping declaration to create a SQLAlchemy model named User"""
+""" This script uses SQLAlchemy mapping declaration to create
+a SQLAlchemy model named User """
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
+
 class User(Base):
     """
-    SQLAlchemy model named User 
+    SQLAlchemy model named User
     """
     __tablename__ = 'users'
 
@@ -15,4 +17,4 @@ class User(Base):
     email = Column(String(250), nullable=False)
     hashed_password = Column(String(250), nullable=False)
     session_id = Column(String(250), nullable=True)
-    reset_token = Column(String(250), nullable=True)
+    reset_token = Column(String, nullable=True)
