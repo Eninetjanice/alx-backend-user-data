@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """ Auth """
 
-from bcrypt import hashpw, gensalt
+from bcrypt import checkpw, hashpw, gensalt
 from db import DB
-# from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.orm.exc import NoResultFound
 from user import User
 
 
@@ -45,7 +45,6 @@ class Auth:
             ValueError: If a user with the given email already exists.
         """
         # If user exist with passed email, raise a ValueError
-        from sqlalchemy.orm.exc import NoResultFound
         try:
             user = self._db.find_user_by(email=email)
         except NoResultFound:
@@ -56,3 +55,22 @@ class Auth:
 
         else:
             raise ValueError(f'User {email} already exists')
+
+    def valid_login(self, email: str, password: str) -> bool:
+        """
+        Credentials validation
+        Args:
+            email (str): User's email
+            password (str): User's password
+        Return:
+            True: if user's email matches with pwd. Use bcrypt.checkpw.
+            False: in any other case
+        """
+        try:
+            user = self._db.find_user_by(email=email)
+            if user:
+                if checkpw(password.encode('utf-8'), user.hashed_password):
+                    return True
+        except NoResultFound and Exception:
+            pass
+        return False
