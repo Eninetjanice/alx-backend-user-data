@@ -2,7 +2,7 @@
 """ Basic Flask app """
 
 from auth import Auth
-from flask import Flask, jsonify, request
+from flask import Flask, abort, jsonify, request
 
 
 app = Flask(__name__)
@@ -35,6 +35,20 @@ def users():
         return jsonify(email=user.email, message='user created')
     except ValueError:
         return jsonify(message='email already registered'), 400
+
+
+@app.route('/sessions', methods=['POST'], strict_slashes=False)
+def login():
+    """
+    Login function that responds to the POST /sessions route
+    """
+    user_email = request.form['email']
+    user_pwd = request.form['password']
+    if not AUTH.valid_login(email=user_email, password=user_pwd):
+        abort(401)
+    else:
+        AUTH.create_session(user_email)
+        return jsonify(email=user_email, message='logged in')
 
 
 if __name__ == "__main__":
