@@ -2,7 +2,7 @@
 """ Basic Flask app """
 
 from auth import Auth
-from flask import Flask, abort, jsonify, request
+from flask import Flask, abort, jsonify, make_response, request
 
 
 app = Flask(__name__)
@@ -47,8 +47,9 @@ def login():
     if not AUTH.valid_login(email=user_email, password=user_pwd):
         abort(401)
     else:
-        AUTH.create_session(user_email)
-        return jsonify(email=user_email, message='logged in')
+        response = make_response(jsonify(email=user_email, message='logged in'))
+        response.set_cookie(('session_id'), AUTH.create_session(user_email))
+        return response
 
 
 if __name__ == "__main__":
