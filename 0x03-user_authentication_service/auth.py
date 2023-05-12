@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """ Auth """
 
+import uuid
 from bcrypt import checkpw, hashpw, gensalt
 from db import DB
 from sqlalchemy.orm.exc import NoResultFound
@@ -74,3 +75,11 @@ class Auth:
         except NoResultFound and Exception:
             pass
         return False
+
+    def _generate_uuid() -> str:
+        """
+        Generates UUIDs.
+        Return:
+            String representation of a new UUID.
+        """
+        return str(uuid.uuid4())
