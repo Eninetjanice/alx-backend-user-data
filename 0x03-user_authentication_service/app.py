@@ -48,7 +48,7 @@ def login():
         abort(401)
     else:
         response = make_response(jsonify(email=user_email, message='logged in'))
-        response.set_cookie(('session_id'), AUTH.create_session(user_email))
+        response.set_cookie('session_id', AUTH.create_session(user_email))
         return response
 
 
