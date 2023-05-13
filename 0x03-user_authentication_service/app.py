@@ -58,24 +58,38 @@ def logout() -> str:
     """
     Logout function that responds to the GET /sessions route
     """
-    session_id = request.cookies.get('session_id')
+    session_id = request.cookies.get('session_id', None)
     user = AUTH.get_user_from_session_id(session_id)
-    if user:
-        AUTH.destroy_session(user.id)
-        return redirect('/')
-    else:
+    if user is None or session_id is None:
         abort(403)
+    AUTH.destroy_session(user.id)
+    return redirect('/')
 
 
 @app.route('/profile', methods=['GET'], strict_slashes=False)
 def profile() -> str:
     """ User profile """
-    session_id = request.cookies.get('session_id')
+    session_id = request.cookies.get('session_id', None)
     user = AUTH.get_user_from_session_id(session_id)
-    if user:
-        return jsonify(email=user.email), 200
-    else:
+    if session_id is None or user is None:
         abort(403)
+    return jsonify(email=user.email), 200
+
+
+@app.route('/reset_password', methods=['POST'], strict_slashes=False)
+def get_reset_password_token_route() -> str:
+    """
+    Responds to POST /reset_password route
+    Return:
+        403 status code if email not registered
+        Generate token & respond with 200 HTTP status if exists
+    """
+    user_mail = request.form.get('email')
+    is_registered = AUTH.create_session(user_mail)
+    if not is_registered:
+        abort(403)
+    token = AUTH.get_reset_password_token(user_mail)
+    return jsonify({"email": user_mail, "reset_token": token})
 
 
 if __name__ == "__main__":
