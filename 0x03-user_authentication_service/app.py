@@ -2,7 +2,7 @@
 """ Basic Flask app """
 
 from auth import Auth
-from flask import Flask, abort, jsonify, request
+from flask import Flask, abort, jsonify, redirect, request
 
 
 app = Flask(__name__)
@@ -42,8 +42,8 @@ def login():
     """
     Login function that responds to the POST /sessions route
     """
-    user_mail = request.form['email']
-    user_pwd = request.form['password']
+    user_mail = request.form.get('email')
+    user_pwd = request.form.get('password')
     if not AUTH.valid_login(email=user_mail, password=user_pwd):
         abort(401)
     else:
@@ -51,6 +51,31 @@ def login():
         reply = jsonify(email=user_mail, message='logged in')
         reply.set_cookie("session_id", session_id)
         return reply
+
+
+@app.route('/session', methods=['GET'], strict_slashes=False)
+def logout() -> str:
+    """
+    Logout function that responds to the GET /sessions route
+    """
+    session_id = request.cookies.get('session_id')
+    user = AUTH.get_user_from_session_id(session_id)
+    if user:
+        AUTH.destroy_session(user.id)
+        return redirect('/')
+    else:
+        abort(403)
+
+
+@app.route('/profile', methods=['GET'], strict_slashes=False)
+def profile() -> str:
+    """ User profile """
+    session_id = request.cookies.get('session_id')
+    user = AUTH.get_user_from_session_id(session_id)
+    if user:
+        return jsonify(email=user.email), 200
+    else:
+        abort(403)
 
 
 if __name__ == "__main__":
